@@ -8,9 +8,6 @@ const update = require ('./lib/update');
 const track = async () => {
     console.log('Welcome to our awesome company!')
 
-    let departmentA = await array.getDepartmentArray()
-    let employeeA = await array.getEmployeeArray()
-    let positionA = await array.getPositionArray()
 
 
     inquirer.prompt({
@@ -18,56 +15,56 @@ const track = async () => {
         type: "list",
         name: "question",
         choices:['View dempartments', 'View positions', 'View employees', 'View managers', 'View non-managment', 'Add a department', 'Add position', 'Add an employee', 'Update an employee',"Quit"]
-    }).then(async (answers) => {
+    }).then( (answers) => {
         switch (answers.question) {
             case "View departments":
                 console.log("Showing all departments");
-                await view.departments();
-                return track();
+                view.departments();
+                
             case "View positions":
                 console.log("Showing all positions");
-                await view.positions();
-                return track();
+                view.positions();
+                
             case "View employees":
                 console.log("Showing all employees");
-                await view.employees();
-                return track();
+                view.employees();
+                
             case "View managers":
                 console.log("Showing all managers");
-                await view.managers();
-                return track();
+                view.managers();
+                
             case "View non-managment":
                 console.log("Showing all non-manager employees");
-                await view.nmemployees();
-                return track();
+                view.nmemployees();
+                
             case "View employees by department":
                 console.log("Showing employees by department");
-                await view.empDepartment();
-                return track();
+                view.empDepartment();
+                
             case "Add a department":
                 console.log("Adding a department");
-                await add.department();
-                return track();
+                add.department();
+                break;
             case "Add a position":
                 console.log("Adding a position");
-                await add.position();
-                return track();
+                add.position();
+                
             case "Add an employee":
                 console.log("Adding an employee");
-                await add.employee();
-                return track();
+                add.employee();
+                
             case "Update an employee":
                 console.log("Updated an employee");
-                await update.employee();
-                return track();
+                update.employee();
+                
             case "Update a position":
                 console.log("Updated a position");
-                await update.employeeRole()
-                return track();
+                update.employeeRole()
+                
             case "Update a manager": 
                 console.log("Updated a manager");
-                await update.employeeManager()
-                return track();
+                update.employeeManager()
+                
             default:
                 console.log('GoodBye!');
         };
