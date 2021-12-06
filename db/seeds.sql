@@ -7,7 +7,7 @@ VALUES ("IT"),
        ("Legal"),
        ("Sales");
        
-INSERT INTO position (title,salary, department_id)
+INSERT INTO position (title, salary, department_id)
 VALUES ("Support Lead",50000,1),
        ("Support Desk",40000,1),
        ("Accounts Manager",80000,2),
@@ -21,7 +21,7 @@ VALUES ("Support Lead",50000,1),
        ("Professional Consultant",110000,5),
        ("CEO",300000,2);
 
-INSERT INTO employee (first_name,last_name, position_id, manager_id)
+INSERT INTO employee (first_name, last_name, position_id, manager_id)
 VALUES ("Christy","Brewer",1,NULL),
        ("Cheryl","Hearth",3,NULL),
        ("Richie","Stone",5,NULL),
