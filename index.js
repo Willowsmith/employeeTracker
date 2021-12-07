@@ -30,7 +30,6 @@ const track = async () => {
         "Add position",
         "Add an employee",
         "Update a position",
-        "Update a manager",
         "Quit",
       ],
     })
@@ -51,7 +50,7 @@ const track = async () => {
           employees();
           break;
 
-        case "Add a department":
+        case "Add department":
           console.log("Adding a department");
           addDepartment();
           break;
@@ -69,11 +68,6 @@ const track = async () => {
         case "Update a position":
           console.log("Updated a position");
           employeePosition();
-          break;
-
-        case "Update a manager":
-          console.log("Updated a manager");
-          employeeManager();
           break;
 
         default:
@@ -94,7 +88,7 @@ function departments() {
   });
 }
 function positions() {
-  const query = `SELECT * FROM department JOIN position ON department.id=position.department_id`;
+  const query = `SELECT * FROM department JOIN empposition ON department.id=empposition.department_id`;
 
   db.query(query, function (err, data) {
     if (err) throw err;
@@ -104,7 +98,7 @@ function positions() {
 }
 
 function employees() {
-  const query = `SELECT employee.id 'ID', employee.first_name 'First Name', employee.last_name 'Last Name', position.title 'Job',department.name 'Department', position.salary 'Salary', CONCAT_WS(' ', m.first_name, m.last_name) 'Manager' FROM department JOIN position ON department.id=position.department_id JOIN employee ON position.id=employee.position_id LEFT JOIN employee AS m ON m.id = employee.manager_id`;
+  const query = `SELECT employee.id 'ID', employee.first_name 'First Name', employee.last_name 'Last Name', empposition.title 'Job',department.name 'Department', empposition.salary 'Salary', CONCAT_WS(' ', m.first_name, m.last_name) 'Manager' FROM department JOIN empposition ON department.id=empposition.department_id JOIN employee ON empposition.id=employee.empposition_id LEFT JOIN employee AS m ON m.id = employee.manager_id`;
 
   db.query(query, function (err, data) {
     if (err) throw err;
@@ -123,10 +117,11 @@ function addDepartment() {
       type: "input",
       name: "name",
     })
-    .then(({ name }) => {
+    .then((answers) => {
       const query = `INSERT INTO department (name) VALUES (?)`;
 
-      db.query(query, name, function (err, data) {
+      db.query(query, [answers.name], 
+        function (err, data) {
         if (err) throw err;
         console.log(data);
         track();
@@ -149,21 +144,21 @@ async function addPosition() {
       },
       {
         message: "What is the new positions salary",
-        type: "input",
+        type: "number",
         name: "salary",
       },
       {
         message: "What department id is the new position in?",
-        type: "input",
+        type: "number",
         name: "department",
       },
     ])
     .then((answers) => {
-      const query = `INSERT INTO position (title, salary, department_id) VALUES (?,?,?)`;
+      const query = "INSERT INTO empposition (title, salary, department_id) VALUES (?,?,?)";
+      
 
       db.query(
-        query,
-        [`${answers.name}`, `${answers.salary}`, `${answers.department}`],
+        query, [answers.name, answers.salary, answers.department],
         function (err, data) {
           if (err) throw err;
           console.log(data);
@@ -175,19 +170,13 @@ async function addPosition() {
 }
 
 function addEmployee() {
-  const positions = position.map((position) => {
-    return {
-      name: position.Title,
-      value: position.ID,
-    };
-  });
-  const employees = employeeA.map((employee) => {
-    return {
-      name: employee.Name,
-      value: employee.ID,
-    };
-  });
-  employees.push("None");
+    const positionA = `SELECT * FROM empposition`;
+  db.query(positionA, function (err, data) {
+    if (err) throw err;
+    console.table(data);
+
+
+  //employees.push("None");
 
   inquirer
     .prompt([
@@ -202,31 +191,23 @@ function addEmployee() {
         name: "lastName",
       },
       {
-        message: "What is the new employee's new position?",
-        type: "list",
+        message: "What is the new employee's new position id?",
+        type: "number",
         name: "position",
-        choices: positions,
       },
       {
-        message: "Who is the new employee's new manager?",
-        type: "list",
+        message: "Who is the new employee's new manager id?",
+        type: "number",
         name: "manager",
-        choices: employees,
       },
     ])
     .then((answers) => {
-      const query = `INSERT INTO employee (first_name, last_name, position_id, manager_id) VALUES (?,?,?,?)`;
+      const query = `INSERT INTO employee (first_name, last_name, empposition_id, manager_id) VALUES (?,?,?,?)`;
       if (answers.manager == "None") {
         answers.manager = 0;
       }
       db.query(
-        query,
-        [
-          `${answers.firstName}`,
-          `${answers.lastName}`,
-          `${answers.position}`,
-          `${answers.manager}`,
-        ],
+        query, [answers.firstName, answers.lastName, answers.position, answers.manager],
         function (err, data) {
           if (err) throw err;
           console.log(data);
@@ -234,38 +215,29 @@ function addEmployee() {
         }
       );
     });
+}); 
 }
 
 function employeePosition() {
-  const viewEmployees = employeeA.map((employee) => {
-    return {
-      name: employee.Name,
-      value: employee.ID,
-    };
-  });
-  const viewPositions = positionA.map((position) => {
-    return {
-      name: position.Title,
-      value: position.ID,
-    };
-  });
+    const viewEmployees = `SELECT * FROM employee`;
+  db.query(viewEmployees, function (err, data) {
+    if (err) throw err;
+    console.table(data);
   inquirer
     .prompt([
       {
-        message: "Which employee would you like to update?",
-        type: "list",
+        message: "Which employee id would you like to update?",
+        type: "number",
         name: "name",
-        choices: viewEmployees,
       },
       {
-        message: "What position should this employee have?",
-        type: "list",
-        name: "job",
-        choices: viewPositions,
+        message: "What position id should this employee have?",
+        type: "number",
+        name: "position",
       },
     ])
     .then((answers) => {
-      const query = `UPDATE employee SET position_id = (?) WHERE employee.id = (?)`;
+      const query = `UPDATE employee SET empposition_id = (?) WHERE employee.id = (?)`;
 
       db.query(
         query,
@@ -277,5 +249,6 @@ function employeePosition() {
         }
       );
     });
+});
 }
 
