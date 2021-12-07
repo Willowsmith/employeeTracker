@@ -123,7 +123,7 @@ function addDepartment() {
       db.query(query, [answers.name], 
         function (err, data) {
         if (err) throw err;
-        console.log(data);
+        console.table(data);
         track();
       });
     });
@@ -161,7 +161,7 @@ async function addPosition() {
         query, [answers.name, answers.salary, answers.department],
         function (err, data) {
           if (err) throw err;
-          console.log(data);
+          console.table(data);
           track();
         }
       );
@@ -210,7 +210,7 @@ function addEmployee() {
         query, [answers.firstName, answers.lastName, answers.position, answers.manager],
         function (err, data) {
           if (err) throw err;
-          console.log(data);
+          console.table(data);
           track();
         }
       );
